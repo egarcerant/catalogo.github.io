@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compartir Múltiples Imágenes</title>
+</head>
+<body>
+
+    <h1>Comparte varias imágenes a WhatsApp</h1>
+    
+    <label for="filePicker">Selecciona tus imágenes:</label>
+    <input type="file" id="filePicker" name="fileList" multiple accept="image/*" />
+    <br><br>
+    
+    <button id="shareButton">Compartir Imágenes</button>
+
+    <p id="statusMessage" style="color: #d32f2f; font-weight: bold;"></p>
+
+    <script src="script.js">// Obtener los elementos del HTML
+const filePicker = document.getElementById('filePicker');
+const shareButton = document.getElementById('shareButton');
+const statusMessage = document.getElementById('statusMessage'); // Elemento para mensajes
+
+shareButton.addEventListener('click', async () => {
+  // Limpiar mensaje anterior
+  statusMessage.textContent = '';
+
+  // Obtener la lista de archivos seleccionados por el usuario
+  const files = filePicker.files;
+
+  // Verificar si el usuario seleccionó al menos un archivo
+  if (files.length === 0) {
+    statusMessage.textContent = 'Por favor, selecciona al menos una imagen para compartir.';
+    return;
+  }
+
+  // Comprobar si el navegador soporta compartir archivos
+  if (navigator.canShare && navigator.canShare({ files: files })) {
+    try {
+      // Llamar a la API para compartir la lista de archivos
+      await navigator.share({
+        title: 'Imágenes Compartidas',
+        text: '¡Mira estas imágenes que te comparto!',
+        files: files
+      });
+      console.log('Imágenes compartidas con éxito.');
+    } catch (error) {
+      // Un error común es que el usuario cierre el diálogo de compartir
+      console.error('Hubo un error al compartir:', error);
+      statusMessage.textContent = 'El proceso de compartir fue cancelado o falló.';
+    }
+  } else {
+    statusMessage.textContent = 'Lo sentimos, tu navegador no soporta compartir múltiples archivos.';
+  }
+});</script>
+</body>
+</html>
